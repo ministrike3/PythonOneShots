@@ -24,7 +24,7 @@ class Item(Resource):
         #you can use list()to turn a filter object into a list
         #or next()to return the first item and then keep calling next for the next one
         #next()can also break it; that why put , None if nothing exists
-        return({'item': None}),200 if item else 404 #404 is not found
+        return({'item': item}), 200 if item else 404 #404 is not found
 
     def post(self, name):
         if next(filter(lambda x: x['name']==name,items), None) is not None:
