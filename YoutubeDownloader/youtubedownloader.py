@@ -1,6 +1,8 @@
 import pafy
 import requests
 from bs4 import BeautifulSoup
+import subprocess
+import glob
 
 playlisturl =  input('Copy and Paste the playlist Link: ')
 def download(url):
@@ -10,7 +12,7 @@ def download(url):
 def get_playlist_urls(playlisturl):
     r = requests.get(playlisturl)
     data = r.text
-    soup = BeautifulSoup(data)
+    soup = BeautifulSoup(data,"html5lib")
     a_links=[]
     v_links=[]
     for link in soup.find_all('a'):
@@ -22,8 +24,23 @@ def get_playlist_urls(playlisturl):
             v_links.append(link)
             print(link)
     return(v_links)
-urls = get_playlist_urls(playlisturl)
-for url in urls:
-    url="www.youtube.com/watch?v="+url
-    download(url)
-    print(url + " DOWNLOADED")
+
+
+if __name__ == '__main__':
+    urls = get_playlist_urls(playlisturl)
+    for url in urls:
+        url="www.youtube.com/watch?v="+url
+        download(url)
+        print(url + " DOWNLOADED")
+    list_of_m4a_songs = glob.glob('*.m4a')
+    for song in list_of_m4a_songs:
+        print(song)
+        song=song.replace(" ", "\ ")
+        song=song.replace("&", "\&")
+        song=song.replace("(", "\(")
+        song=song.replace(")", "\)")
+        song=song.replace("-", "\-")
+        command = "ffmpeg -i "+ song +' '+ song[:-3]+"mp3"
+        subprocess.call(command, shell=True)
+        command = "rm -f "+ song 
+        subprocess.call(command, shell=True)
